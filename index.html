@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vaalikone</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.5;
+      background-color: #f9f9f9;
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    /* Yleinen kontti, jonka sisällä sisältö on keskitetty */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    /* Taustakysymykset */
+    .background-section {
+      margin-bottom: 30px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 15px;
+      background-color: #fafafa;
+    }
+    .background-section label {
+      display: block;
+      margin: 8px 0 4px 0;
+      font-weight: bold;
+    }
+    .background-section select,
+    .background-section input[type="radio"] {
+      margin-bottom: 10px;
+    }
+
+    /* Vaalikonekysymykset */
+    #vaalikoneForm {
+      display: block;
+    }
+    .question-container {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 20px;
+      background-color: #fafafa;
+    }
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+    .question-number {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #333;
+    }
+    .question-text {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .selite {
+      font-style: italic;
+      font-size: 0.9em;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    /* Vastausvaihtoehdot */
+    .answers {
+      margin-bottom: 10px;
+    }
+    .answers label {
+      display: inline-block;
+      margin-right: 15px;
+      cursor: pointer;
+    }
+
+    /* Kommenttikenttä */
+    .comment-container {
+      margin-top: 10px;
+    }
+    .comment-container label {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
+    .comment-container textarea {
+      width: 100%;
+      min-height: 40px;
+      resize: vertical;
+    }
+
+    /* Yhteenveto-osa */
+    #summary-section {
+      margin-top: 40px;
+      border-top: 2px solid #ccc;
+      padding-top: 20px;
+    }
+    #summary-section h2 {
+      margin-bottom: 20px;
+    }
+    #summary {
+      background-color: #fff;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    #summary ol {
+      margin-left: 20px;
+    }
+    #summary li {
+      margin-bottom: 15px;
+    }
+
+    /* Napit */
+    .buttons {
+      margin-top: 20px;
+    }
+    button {
+      font-size: 16px;
+      padding: 8px 16px;
+      margin-right: 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: #fff;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Responsiiviset tyylit pienille näytöille */
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      .question-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      button {
+        width: 100%;
+        margin-right: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Vaalikone</h1>
+
+  <!-- TAUSTAKYSYMYKSET -->
+  <div class="background-section">
+    <h2>Taustakysymykset</h2>
+    <form id="backgroundForm">
+      <!-- 1. ikä -->
+      <label for="ika">Ikä:</label>
+      <select id="ika" name="ika">
+        <option value="">Valitse ikä</option>
+        <option value="Alle 18">Alle 18</option>
+        <option value="18-24">18-24</option>
+        <option value="25-34">25-34</option>
+        <option value="35-44">35-44</option>
+        <option value="45-54">45-54</option>
+        <option value="55-64">55-64</option>
+        <option value="65+">65+</option>
+      </select>
+
+      <!-- 2. sukupuoli -->
+      <label>Sukupuoli:</label>
+      <label><input type="radio" name="sukupuoli" value="Mies"> Mies</label>
+      <label><input type="radio" name="sukupuoli" value="Nainen"> Nainen</label>
+
+      <!-- 3. äänestän yleensä puoluetta -->
+      <label for="puolue">Äänestän yleensä:</label>
+      <select id="puolue" name="puolue">
+        <option value="">Valitse puolue</option>
+        <option value="Kok">Kok</option>
+        <option value="Kesk">Kesk</option>
+        <option value="PS">PS</option>
+        <option value="SDP">SDP</option>
+        <option value="Vihr">Vihr</option>
+        <option value="Vas">Vas</option>
+        <option value="KD">KD</option>
+        <option value="Liik">Liik</option>
+        <option value="Muu">Muu</option>
+      </select>
+
+      <!-- 4. äänestän yleensä miestä/naista -->
+      <label>Äänestän yleensä:</label>
+      <label><input type="radio" name="ehdokasSukupuoli" value="Miestä"> Miestä</label>
+      <label><input type="radio" name="ehdokasSukupuoli" value="Naista"> Naista</label>
+    </form>
+  </div>
+
+  <!-- VARSINAISET KYSYMYKSET -->
+  <div id="vaalikoneForm"></div>
+
+  <!-- Napit: "Näytä yhteenveto" ja "Kopioi yhteenveto leikepöydälle" -->
+  <div class="buttons">
+    <button type="button" onclick="showSummary()">Näytä yhteenveto</button>
+    <button type="button" onclick="copySummary()">Kopioi yhteenveto leikepöydälle</button>
+  </div>
+
+  <!-- YHTEENVETO -->
+  <div id="summary-section">
+    <h2>Vastausten yhteenveto</h2>
+    <div id="summary"></div>
+    <div class="buttons">
+      <button type="button" onclick="copySummary()">Kopioi yhteenveto leikepöydälle</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Tiedot kaikista 30 kysymyksestä: väite ja selite
+  const questionsData = [
+    {
+      statement: "Pienten koulujen lakkauttaminen on perusteltua säästösyistä.",
+      selite: "Talousvaikeudet ja syntyvyyden lasku luovat kunnille paineita lakkauttaa etenkin pienempiä kouluja. Viimeisten 30 vuoden aikana Suomen peruskouluista on lakkautettu yli puolet."
+    },
+    {
+      statement: "Kunnassani tulisi tarjota mahdollisuus opiskella ruotsin kieltä suomenkielisissä kouluissa jo ennen peruskoulujen kuudetta luokkaa.",
+      selite: "Vaikka ruotsin kielen opetus toisena kotimaisena kielenä alkaa virallisesti viimeistään kuudennella luokalla, monet kunnat ja koulut tarjoavat varhennettua kielten opetusta."
+    },
+    {
+      statement: "Kuntani tulisi asettaa yläraja peruskoulun opetusryhmien koolle.",
+      selite: "Opetusalan ammattijärjestön OAJ:n suositus on, että luokan koko olisi enimmillään 20 oppilasta, 1. ja 2.-luokan 18 oppilasta. Joka seitsemäs opettaja työskentelee OAJ:n mukaan luokassa, jossa on 30 oppilasta tai enemmän."
+    },
+    {
+      statement: "Kouluissa ja päiväkodeissa pitää vähentää liharuoan tarjoamista.",
+      selite: "Perusopetuslaissa säädetään, että oppilaalle on tarjottava joka päivä täysipainoinen kouluateria."
+    },
+    {
+      statement: "Kunnan pitää tukea rahallisesti alle 3-vuotiaiden lasten hoitamista kotona.",
+      selite: "Kela maksaa tähän tarkoitukseen kotihoidon tukea, ja osa kunnista maksaa sen päälle kuntalisää."
+    },
+    {
+      statement: "Koulun on pidettävä yllä kristillisiä perinteitä.",
+      selite: "Koulussa järjestettäviin perinteisiin juhliin, kuten kevät- ja joulujuhlaan, voi liittyä uskontoon viittaavia elementtejä."
+    },
+    {
+      statement: "Kuntani pitää houkutella asukkaita vauvarahalla.",
+      selite: "Syntyvyys on Suomessa historiallisen alhaista. Osa kunnista on ryhtynyt houkuttelemaan uusia asukkaita maksamalla vanhemmille vauvarahaa syntyvistä lapsista."
+    },
+    {
+      statement: "Jos kunnan tuloja ja menoja tasapainotetaan, se on tehtävä mieluummin menoja leikkaamalla kuin veroja korottamalla.",
+      selite: "Kuntalaki edellyttää, että kunnan tulot ja menot ovat tasapainossa. Mahdollinen alijäämä on katettava määräajassa."
+    },
+    {
+      statement: "Pääomatulot on pidettävä kunnallisverotuksen ulkopuolella.",
+      selite: "Kunnat keräävät veroja kuntalaisten tuloista kunnallisveroina ja kiinteistöistä kiinteistöveroina. Pääomatuloista maksetaan veroa vain valtiolle."
+    },
+    {
+      statement: "Kunnan on ostettava ensisijaisesti palveluita omistamiltaan yhtiöiltä.",
+      selite: "Kunnat voivat omistaa yhtiöitä, joiden ei tarvitse osallistua hankintalain mukaiseen kilpailutukseen."
+    },
+    {
+      statement: "Kuntien pitää osallistua maakuntalentojen rahoittamiseen.",
+      selite: "Maakuntalennoilla viitataan Suomen sisäisiin lentoihin. Jotkut kunnat tukevat lentoliikennettä, joka ei muuten olisi kannattavaa."
+    },
+    {
+      statement: "Pienten paikkakuntien työttömille riittää, että tukea työnhakuun saa etänä.",
+      selite: "Työllisyyspalvelut siirtyivät kuntien vastuulle tammikuussa 2025. Palvelujen järjestämisvastuu on 45 työllisyysalueella, jotka muodostuvat pääasiassa useasta kunnasta."
+    },
+    {
+      statement: "Kunnan pitää tarvittaessa pakkolunastaa yksityisiä maa-alueita, jotta se saa tonttimaata rakentamiseen.",
+      selite: "Pakkolunastus tarkoittaa, että kunnalla on oikeus lunastaa yksityisessä omistuksessa olevaa maata. Yleensä kunnat hankkivat maa-alueet vapaaehtoisin kaupoin."
+    },
+    {
+      statement: "Kuntien pitää paikata valtion tekemät leikkaukset teattereiden rahoitukseen.",
+      selite: "Valtio on leikannut kaupunginteattereiden rahoitusta keskimäärin yli kymmenen prosenttia vuonna 2025. Ne saavat tuloistaan keskimäärin noin kolmanneksen valtiolta ja kolmanneksen kunnalta."
+    },
+    {
+      statement: "Kirjastoja pitäisi muuttaa itsepalvelukirjastoiksi, jotta kuntani voi säästää henkilöstön palkkakuluista.",
+      selite: "Kunnat ovat lisänneet kirjastojen aukioloa joko osin tai kokonaan ilman paikalla olevaa henkilökuntaa."
+    },
+    {
+      statement: "Kuntani pitää rahoittaa tapahtumia, jotka lisäävät erilaisten kulttuurien vuorovaikutusta.",
+      selite: "Kunnat päättävät itse, käyttävätkö ne varojaan erilaisiin tapahtumiin."
+    },
+    {
+      statement: "Kotikuntani olisi hyvä osoittaa tukensa sukupuoli- ja seksuaalivähemmistöille Pride-liputuksella.",
+      selite: "Pride-tapahtumilla tuetaan sukupuoli- ja seksuaalivähemmistöjen tasa-arvoa, ja niitä järjestetään useissa Suomen kunnissa. Osa kunnista tukee tapahtumaa liputtamalla."
+    },
+    {
+      statement: "Myös kuntani harvaan asutuilta alueilta pitää päästä palveluiden ääreen julkisella liikenteellä.",
+      selite: "Kuntien ainoa lakisääteinen tehtävä henkilökuljetuksissa ovat koululaiskuljetukset."
+    },
+    {
+      statement: "Kuntani tulisi välttää avohakkuita omistamillaan metsäalueilla.",
+      selite: "Avohakkuissa poistetaan lähes kaikki puut kerralla. Vaihtoehto on jatkuva kasvatus, jossa hakkuissa kaadetaan ainoastaan osa puista."
+    },
+    {
+      statement: "Kuntaani pitää houkutella lisää teollisuuden työpaikkoja, vaikka siitä olisi haittaa ympäristölle.",
+      selite: "Esimerkiksi kaivokset ja akkutehtaat lisäävät päästöjä vesistöön. Sallitut rajat päästöille määritellään ympäristöluvassa."
+    },
+    {
+      statement: "Kunnan on asetettava rakentaminen lähiluonnon säilyttämisen edelle.",
+      selite: "Rakentamisen tieltä kaadetaan usein metsää."
+    },
+    {
+      statement: "Kuntani on pyrittävä saavuttamaan hiilineutraalius jo ennen Suomen tavoitevuotta 2035.",
+      selite: "Hiilineutraalius tarkoittaa, että ilmastopäästöjä syntyy korkeintaan sen verran kuin hiilinielut sitovat niitä. Suomen kansallinen tavoite hiilineutraaliudesta on kirjattu lakiin. Kunnille omien ilmastotavoitteiden asettaminen on vapaaehtoista."
+    },
+    {
+      statement: "Maahanmuuttajat vahvistavat kotikuntani elinvoimaa.",
+      selite: "Kunnan elinvoimaan vaikuttavat esimerkiksi asukasluvun muutos, työllisten, työttömien ja yritysten määrä sekä kuntalaisten koulutus- ja tulotaso."
+    },
+    {
+      statement: "Kuntani pitää säästää maahanmuuttajien kotouttamisen palveluista.",
+      selite: "Kotoutuminen tarkoittaa uuden kotimaan oloihin asettumista ja sopeutumista. Kunnilla on kokonaisvastuu kotouttamisen palveluista, kuten ohjauksesta ja neuvonnasta, työvoimapalveluista sekä opinnoista, jotka edistävät esimerkiksi kielitaitoa."
+    },
+    {
+      statement: "Kuntani pitää kieltäytyä vastaanottamasta kiintiöpakolaisia.",
+      selite: "Kiintiöpakolaisten vastaanottaminen on kunnille vapaaehtoista. Valtio maksaa kunnille korvauksen kuntapaikan tarjoamisesta."
+    },
+    {
+      statement: "Nurmijärven pitää liittyä Helsingin seudun liikenteeseen (HSL:ään), vaikka se maksaisi kunnalle enemmän kuin nykyinen Uudenmaan ely-keskuksen kilpailuttama ratkaisu.",
+      selite: "Valtaosa kunnan työllisistä pendelöi pääkaupunkiseudulle. Joukkoliikennettä hoitaa nyt Korsisaari-yhtiöt, jonka kanssa sopimus päättyy vuonna 2028."
+    },
+    {
+      statement: "Kunnan on kehitettävä ja markkinoitava Ilvesvuoren työpaikka-aluetta entistä ponnekkaammin, koska muutkin Uudenmaan kunnat kilpailevat isoista työnantajista.",
+      selite: "Keskon valtava uusi logistiikkakeskus Ilvesvuorelle sai rakennusluvan viime joulukuussa. Nurmijärvi tavoittelee 70 prosentin työpaikkaomavaraisuutta nykyisen 62 prosentin sijaan."
+    },
+    {
+      statement: "Nurmijärven pitää houkutella uusia asukkaita myös taloudellisilla kannustimilla, esimerkiksi naapurikuntia halvemmilla tonteilla.",
+      selite: "Nurmijärvi-ilmiö on ohi: Nurmijärven asukasmäärä kasvoi viime vuonna enää 0,5 prosenttia, ja kunnassa on kymmeniä myymättömiä tontteja. Tavoite on asukasmäärän 1,5 prosentin kasvu."
+    },
+    {
+      statement: "Kaikki nykyiset kyläkoulut ja pienet päiväkodit on säilytettävä huolimatta kolmen päätaajaman merkittävistä kouluinvestoinneista ja niiden kasvattamasta velkamäärästä.",
+      selite: "Esimerkiksi pieni Palojoen koulu yritettiin lakkauttaa viime vuonna, ja Lepsämän päiväkodissa on sisäilmaongelmia. Nurmijärvellä on nyt velkaa yli 4 300 euroa asukasta kohden, ja tämä summa kasvaa kouluinvestointien takia."
+    },
+    {
+      statement: "Nurmijärven kunnan pitäisi investoida lisää taiteeseen ja sen markkinointiin.",
+      selite: "250-vuotiasta Nurmijärveä juhlistaa uusi Lintukoto-valoteos Klaukkalan kehätien ja Kolmostien rampissa. Kunta markkinoi itseään jo nyt kirjailija Aleksis Kivellä."
+    }
+  ];
+
+  // Rakennetaan vaalikonekysymykset dynaamisesti "vaalikoneForm"-diviin
+  function generateQuestions() {
+    const formContainer = document.getElementById('vaalikoneForm');
+    let html = "";
+
+    for (let i = 0; i < questionsData.length; i++) {
+      const questionNumber = i + 1;
+      const statement = questionsData[i].statement;
+      const selite = questionsData[i].selite;
+
+      html += `
+        <div class="question-container">
+          <div class="question-header">
+            <div class="question-number">${questionNumber}/30</div>
+          </div>
+          <div class="question-text">${statement}</div>
+          <div class="selite">${selite}</div>
+          <div class="answers">
+            <label><input type="radio" name="q${questionNumber}" value="Täysin eri mieltä"> Täysin eri mieltä</label>
+            <label><input type="radio" name="q${questionNumber}" value="Jokseenkin eri mieltä"> Jokseenkin eri mieltä</label>
+            <label><input type="radio" name="q${questionNumber}" value="Jokseenkin samaa mieltä"> Jokseenkin samaa mieltä</label>
+            <label><input type="radio" name="q${questionNumber}" value="Täysin samaa mieltä"> Täysin samaa mieltä</label>
+          </div>
+          <div class="comment-container">
+            <label for="comment_${questionNumber}">Kommentti (vapaaehtoinen):</label>
+            <textarea id="comment_${questionNumber}" name="comment_${questionNumber}" rows="2"></textarea>
+          </div>
+        </div>
+      `;
+    }
+    formContainer.innerHTML = html;
+  }
+
+  // Näytä yhteenveto
+  function showSummary() {
+    let summaryHtml = "";
+
+    // Taustakysymykset
+    const ika = document.getElementById('ika').value || "(Ei valittu)";
+    const sukupuoli = document.querySelector('input[name="sukupuoli"]:checked');
+    const puolue = document.getElementById('puolue').value || "(Ei valittu)";
+    const ehdokasSukupuoli = document.querySelector('input[name="ehdokasSukupuoli"]:checked');
+    const sukupuoliVal = sukupuoli ? sukupuoli.value : "(Ei valittu)";
+    const ehdokasSukupuoliVal = ehdokasSukupuoli ? ehdokasSukupuoli.value : "(Ei valittu)";
+
+    summaryHtml += "<h3>Taustakysymykset</h3>";
+    summaryHtml += "<ul>";
+    summaryHtml += "<li><strong>Ikä:</strong> " + ika + "</li>";
+    summaryHtml += "<li><strong>Sukupuoli:</strong> " + sukupuoliVal + "</li>";
+    summaryHtml += "<li><strong>Äänestän yleensä puoluetta:</strong> " + puolue + "</li>";
+    summaryHtml += "<li><strong>Äänestän yleensä:</strong> " + ehdokasSukupuoliVal + "</li>";
+    summaryHtml += "</ul>";
+
+    // Vaalikonekysymykset
+    summaryHtml += "<h3>Vaalikonekysymykset</h3>";
+    summaryHtml += "<ol>";
+
+    for (let i = 0; i < questionsData.length; i++) {
+      const questionNumber = i + 1;
+      const statement = questionsData[i].statement;
+
+      // Haetaan valittu radio-painike kyseiseltä kysymykseltä
+      const radio = document.querySelector('input[name="q' + questionNumber + '"]:checked');
+      const radioValue = radio ? radio.value : "";
+      const userAnswer = radioValue || "(Ei vastausta)";
+
+      // Haetaan kommenttikentän arvo
+      const commentField = document.getElementById('comment_' + questionNumber);
+      const commentValue = commentField ? commentField.value.trim() : "";
+      const userComment = commentValue ? commentValue : "(Ei kommenttia)";
+
+      summaryHtml += `
+        <li>
+          <strong>${statement}</strong><br/>
+          <em>Vastauksesi:</em> ${userAnswer}<br/>
+          <em>Kommentti:</em> ${userComment}
+        </li>
+      `;
+    }
+    summaryHtml += "</ol>";
+
+    document.getElementById('summary').innerHTML = summaryHtml;
+  }
+
+  // Kopioi yhteenveto leikepöydälle
+  function copySummary() {
+    const summaryText = document.getElementById('summary').innerText;
+    if (!summaryText.trim()) {
+      alert("Yhteenvetoa ei ole vielä luotu tai se on tyhjä. Paina ensin 'Näytä yhteenveto'.");
+      return;
+    }
+    navigator.clipboard.writeText(summaryText)
+      .then(() => {
+        alert("Yhteenveto kopioitu leikepöydälle!");
+      })
+      .catch(err => {
+        alert("Kopiointi epäonnistui: " + err);
+      });
+  }
+
+  // Varmistetaan, että kysymykset generoidaan, kun DOM on täysin ladattu
+  window.onload = function() {
+    generateQuestions();
+  };
+</script>
+
+</body>
+</html>
